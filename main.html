@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探索姑苏 - 主页</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* ========== 全局样式 ========== */
+        body {
+            background: var(--bg-light);
+        }
+
+        .main-app {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .main-app.active {
+            display: block;
+        }
+
+        /* ========== 顶部标题栏 ========== */
+        .app-header {
+            background: var(--gradient-red);
+            color: white;
+            padding: 1.25rem 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></svg>');
+            background-size: 20px 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-greeting {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.125rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== 页面内容区 ========== */
+        .page-content {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* ========== 石像打卡页面 ========== */
+        .statues-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .statue-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .statue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .statue-card.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: var(--shadow-md);
+        }
+
+        .statue-image {
+            width: 100%;
+            height: 140px;
+            background: var(--gradient-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+        }
+
+        .statue-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .statue-badge.checked {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .statue-info {
+            padding: 1rem;
+        }
+
+        .statue-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .statue-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .statue-distance {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* 打卡统计卡片 */
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-title {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stats-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ========== 人脸装饰页面 ========== */
+        .camera-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-preview {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: var(--gradient-purple);
+            border-radius: var(--radius-md);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .face-guide-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px dashed rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+
+        .camera-hint {
+            position: absolute;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .decoration-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .decoration-item {
+            aspect-ratio: 1;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .decoration-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .decoration-item.active {
+            border-color: var(--primary-color);
+            background: rgba(211, 47, 47, 0.1);
+        }
+
+        .decoration-icon {
+            font-size: 2rem;
+        }
+
+        .decoration-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ========== 甜品点单页面 ========== */
+        .dessert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dessert-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dessert-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dessert-image {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-orange);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dessert-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dessert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .dessert-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .dessert-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .dessert-desc {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .dessert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dessert-stock {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .qty-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .qty-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .qty-value {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+            font-size: 1.125rem;
+        }
+
+        /* 购物车浮动按钮 */
+        .cart-float {
+            position: fixed;
+            bottom: 100px;
+            right: calc((100vw - min(480px, 100vw)) / 2 + 20px);
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-red);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            box-shadow: var(--shadow-xl);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .cart-float.show {
+            display: flex;
+        }
+
+        .cart-float:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ========== 我的进度页面 ========== */
+        .profile-header {
+            background: var(--gradient-purple);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-title {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .section-link {
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .progress-stats {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .progress-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .progress-bar-wrapper {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient-red);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .achievement-item {
+            text-align: center;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-purple);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 0.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-item.locked .achievement-icon {
+            background: var(--bg-light);
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .achievement-item:hover .achievement-icon {
+            transform: scale(1.1);
+        }
+
+        .achievement-name {
+            font-size: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        /* 菜单项 */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-light);
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+            border-radius: var(--radius-md);
+        }
+
+        .menu-item-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-icon {
+            font-size: 1.5rem;
+        }
+
+        .menu-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .menu-arrow {
+            color: var(--text-light);
+        }
+
+        /* ========== 底部导航栏 ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 0.75rem 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 0 0 3px 3px;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 480px) {
+            .statues-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cart-float {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 主应用 -->
+        <div class="main-app active" id="mainApp">
+            <!-- 顶部标题栏 -->
+            <div class="app-header">
+                <div class="header-top">
+                    <div class="header-user">
+                        <div class="user-avatar">👤</div>
+                        <div>
+                            <div class="user-greeting">你好，</div>
+                            <div class="user-name" id="userName">探索者</div>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-btn" title="通知">🔔</button>
+                        <button class="header-btn" onclick="handleLogout()" title="退出">🚪</button>
+                    </div>
+                </div>
+                <h1 class="header-title" id="headerTitle">石像打卡</h1>
+                <p class="header-subtitle" id="headerSubtitle">发现苏州的历史印记</p>
+            </div>
+
+            <!-- 石像打卡页面 -->
+            <div class="page-content active" id="statuesPage">
+                <!-- 打卡统计 -->
+                <div class="stats-card">
+                    <div class="stats-title">打卡进度</div>
+                    <div class="stats-number"><span id="checkedCount">2</span> / 7</div>
+                    <div class="stats-progress">
+                        <div class="stats-progress-fill" id="statsProgressFill" style="width: 28.5%"></div>
+                    </div>
+                </div>
+
+                <!-- 石像网格 -->
+                <div class="statues-grid" id="statuesGrid">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 人脸装饰页面 -->
+            <div class="page-content" id="facePage">
+                <div class="camera-section">
+                    <div class="camera-preview">
+                        <div class="face-guide-circle"></div>
+                        <div class="camera-hint">请将棉花娃娃的脸放入圆圈内</div>
+                    </div>
+                    <div class="camera-controls">
+                        <button class="btn btn-secondary" style="flex: 0.4;">
+                            🔄 切换
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="capturePhoto()">
+                            📸 拍照
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 装饰效果选择 -->
+                <div class="progress-section">
+                    <div class="section-title">选择装饰效果</div>
+                    <div class="decoration-gallery">
+                        <div class="decoration-item active">
+                            <div class="decoration-icon">✨</div>
+                            <div class="decoration-name">赛博光环</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🌈</div>
+                            <div class="decoration-name">彩虹特效</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">⚡</div>
+                            <div class="decoration-name">电路纹理</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">💫</div>
+                            <div class="decoration-name">星光粒子</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🔮</div>
+                            <div class="decoration-name">魔法光球</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🎆</div>
+                            <div class="decoration-name">烟花效果</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 甜品点单页面 -->
+            <div class="page-content" id="dessertPage">
+                <div class="dessert-list" id="dessertList">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 购物车浮动按钮 -->
+                <div class="cart-float" id="cartFloat" onclick="showCart()">
+                    🛒
+                    <div class="cart-badge" id="cartBadge">0</div>
+                </div>
+            </div>
+
+            <!-- 我的进度页面 -->
+            <div class="page-content" id="progressPage">
+                <!-- 个人信息 -->
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">探索者</div>
+                    <div class="profile-title">初级探索者 · 已探索2天</div>
+                </div>
+
+                <!-- 打卡进度 -->
+                <div class="progress-section">
+                    <div class="section-header">
+                        <div class="section-title">打卡进度</div>
+                        <a href="#" class="section-link">查看全部 →</a>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-number">2 / 7</div>
+                        <div class="progress-label">已完成景点</div>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 28.5%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成就系统 -->
+                <div class="progress-section">
+                    <div class="section-header">
+                        <div class="section-title">我的成就</div>
+                        <a href="#" class="section-link">全部成就 →</a>
+                    </div>
+                    <div class="achievements-grid">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🗼</div>
+                            <div class="achievement-name">虎丘塔</div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🏞️</div>
+                            <div class="achievement-name">拙政园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🦁</div>
+                            <div class="achievement-name">狮子林</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🔔</div>
+                            <div class="achievement-name">寒山寺</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🚣</div>
+                            <div class="achievement-name">平江路</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🌸</div>
+                            <div class="achievement-name">留园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🏛️</div>
+                            <div class="achievement-name">博物馆</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🏆</div>
+                            <div class="achievement-name">全部完成</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 功能菜单 -->
+                <div class="progress-section">
+                    <div class="menu-list">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📦</span>
+                                <span class="menu-text">我的订单</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📸</span>
+                                <span class="menu-text">我的照片</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">⚙️</span>
+                                <span class="menu-text">设置</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">ℹ️</span>
+                                <span class="menu-text">关于我们</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                <button class="nav-item active" onclick="switchPage('statues')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-label">打卡</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('face')">
+                    <div class="nav-icon">📸</div>
+                    <div class="nav-label">拍照</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('dessert')">
+                    <div class="nav-icon">🍰</div>
+                    <div class="nav-label">甜品</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('progress')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">我的</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 石像详情模态框 -->
+        <div class="modal" id="statueModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">虎丘塔</h3>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <div style="font-size: 5rem;" id="modalIcon">🗼</div>
+                </div>
+                <div style="color: var(--text-light); line-height: 1.6; margin-bottom: 2rem;" id="modalDescription">
+                    虎丘塔是中国现存时代最久、规模最大的斜塔，有"中国第一斜塔"之称。始建于隋文帝仁寿九年，已有一千多年历史。
+                </div>
+                <div style="padding: 1rem; background: var(--bg-light); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-light);">距离</span>
+                        <span style="font-weight: bold;" id="modalDistance">0.5km</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-light);">状态</span>
+                        <span style="font-weight: bold; color: var(--success-color);" id="modalStatus">已打卡</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="checkIn()">立即打卡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

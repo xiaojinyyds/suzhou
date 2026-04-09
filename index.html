@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏州石像打卡 - 探索姑苏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #D32F2F;
+            --secondary-color: #455A64;
+            --accent-color: #37474F;
+            --light-bg: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --text-dark: #212121;
+            --text-light: #757575;
+            --success-color: #4CAF50;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 欢迎页 */
+        .welcome-page {
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.9) 0%, rgba(69, 90, 100, 0.9) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%23455A64" width="1200" height="800"/><path fill="%23D32F2F" opacity="0.1" d="M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z"/></svg>');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.3s backwards;
+        }
+
+        .start-button {
+            padding: 1rem 3rem;
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 1s ease 0.6s backwards;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .main-content.active {
+            display: block;
+        }
+
+        /* 顶部标题栏 */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #E53935);
+            color: white;
+            padding: 1.5rem 1.5rem 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* 页面内容 */
+        .page-content {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 石像卡片 */
+        .statue-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .statue-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .statue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .statue-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .statue-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(76, 175, 80, 0.95);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .statue-status.locked {
+            background: rgba(117, 117, 117, 0.95);
+        }
+
+        .statue-info {
+            padding: 1rem;
+        }
+
+        .statue-name {
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .statue-distance {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* 打卡模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #C62828;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+
+        /* 人脸识别页面 */
+        .camera-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .face-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px dashed white;
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .camera-hint {
+            color: white;
+            position: absolute;
+            bottom: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* 甜品卡片 */
+        .dessert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dessert-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .dessert-image {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .dessert-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dessert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .dessert-name {
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .dessert-price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .dessert-description {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #C62828;
+            transform: scale(1.1);
+        }
+
+        .quantity-btn:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .quantity-value {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        /* 购物车浮动按钮 */
+        .cart-float {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--success-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* 进度页面 */
+        .progress-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-stats {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #E0E0E0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #E53935);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .achievement-item {
+            text-align: center;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .achievement-item.locked .achievement-icon {
+            background: #E0E0E0;
+            filter: grayscale(100%);
+        }
+
+        .achievement-name {
+            font-size: 0.8rem;
+            color: var(--text-dark);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border: none;
+            background: none;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 欢迎页 -->
+        <div class="welcome-page" id="welcomePage">
+            <div class="welcome-title">🏛️ 探索姑苏</div>
+            <div class="welcome-subtitle">七座石像的文化之旅</div>
+            <button class="start-button" onclick="startExploring()">开始探索</button>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content" id="mainContent">
+            <!-- 顶部标题 -->
+            <div class="header">
+                <div class="header-title" id="headerTitle">石像打卡</div>
+                <div class="header-subtitle" id="headerSubtitle">发现苏州的历史印记</div>
+            </div>
+
+            <!-- 石像打卡页面 -->
+            <div class="page-content active" id="statuesPage">
+                <div class="statue-grid">
+                    <div class="statue-card" onclick="openStatueModal(1, '虎丘塔')">
+                        <div class="statue-image">
+                            🗼
+                            <div class="statue-status">已打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">虎丘塔</div>
+                            <div class="statue-distance">📍 距离 0.5km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(2, '狮子林')">
+                        <div class="statue-image">
+                            🦁
+                            <div class="statue-status locked">未打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">狮子林</div>
+                            <div class="statue-distance">📍 距离 1.2km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(3, '拙政园')">
+                        <div class="statue-image">
+                            🏞️
+                            <div class="statue-status">已打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">拙政园</div>
+                            <div class="statue-distance">📍 距离 0.8km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(4, '寒山寺')">
+                        <div class="statue-image">
+                            🔔
+                            <div class="statue-status locked">未打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">寒山寺</div>
+                            <div class="statue-distance">📍 距离 3.5km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(5, '平江路')">
+                        <div class="statue-image">
+                            🚣
+                            <div class="statue-status locked">未打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">平江路</div>
+                            <div class="statue-distance">📍 距离 2.1km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(6, '留园')">
+                        <div class="statue-image">
+                            🌸
+                            <div class="statue-status locked">未打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">留园</div>
+                            <div class="statue-distance">📍 距离 4.2km</div>
+                        </div>
+                    </div>
+
+                    <div class="statue-card" onclick="openStatueModal(7, '苏州博物馆')">
+                        <div class="statue-image">
+                            🏛️
+                            <div class="statue-status locked">未打卡</div>
+                        </div>
+                        <div class="statue-info">
+                            <div class="statue-name">苏州博物馆</div>
+                            <div class="statue-distance">📍 距离 1.5km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 人脸装饰页面 -->
+            <div class="page-content" id="facePage">
+                <div class="camera-container">
+                    <div class="camera-preview">
+                        <div class="face-circle"></div>
+                        <div class="camera-hint">请将棉花娃娃放入圆圈内</div>
+                    </div>
+                    <div class="camera-controls">
+                        <button class="btn btn-secondary" style="flex: 0.5;">
+                            🔄 切换
+                        </button>
+                        <button class="btn btn-primary" onclick="capturePhoto()">
+                            📸 拍照
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 甜品点单页面 -->
+            <div class="page-content" id="dessertPage">
+                <div class="dessert-list">
+                    <div class="dessert-card">
+                        <div class="dessert-image">🥮</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">苏式月饼</div>
+                                    <div class="dessert-price">¥18</div>
+                                </div>
+                                <div class="dessert-description">传统苏式月饼，酥皮松软，馅料香甜</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(0, -1)">-</button>
+                                <div class="quantity-value" id="qty-0">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(0, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🍡</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">桂花糖藕</div>
+                                    <div class="dessert-price">¥15</div>
+                                </div>
+                                <div class="dessert-description">香甜软糯，桂花飘香，江南特色甜品</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(1, -1)">-</button>
+                                <div class="quantity-value" id="qty-1">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(1, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🍰</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">松子糕</div>
+                                    <div class="dessert-price">¥12</div>
+                                </div>
+                                <div class="dessert-description">松软香甜，松子香气浓郁</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(2, -1)">-</button>
+                                <div class="quantity-value" id="qty-2">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(2, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🥟</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">青团</div>
+                                    <div class="dessert-price">¥10</div>
+                                </div>
+                                <div class="dessert-description">清明时节必备，软糯可口</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(3, -1)">-</button>
+                                <div class="quantity-value" id="qty-3">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(3, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🍮</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">定胜糕</div>
+                                    <div class="dessert-price">¥8</div>
+                                </div>
+                                <div class="dessert-description">软糯香甜，寓意美好</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(4, -1)">-</button>
+                                <div class="quantity-value" id="qty-4">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(4, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🍪</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">海棠糕</div>
+                                    <div class="dessert-price">¥6</div>
+                                </div>
+                                <div class="dessert-description">外脆内软，豆沙香甜</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(5, -1)">-</button>
+                                <div class="quantity-value" id="qty-5">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(5, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dessert-card">
+                        <div class="dessert-image">🧁</div>
+                        <div class="dessert-info">
+                            <div>
+                                <div class="dessert-header">
+                                    <div class="dessert-name">梅花糕</div>
+                                    <div class="dessert-price">¥9</div>
+                                </div>
+                                <div class="dessert-description">造型精美，香甜可口</div>
+                            </div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="updateQuantity(6, -1)">-</button>
+                                <div class="quantity-value" id="qty-6">0</div>
+                                <button class="quantity-btn" onclick="updateQuantity(6, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 购物车浮动按钮 -->
+                <div class="cart-float" onclick="showCart()" style="display: none;" id="cartFloat">
+                    🛒
+                    <div class="cart-badge" id="cartBadge">0</div>
+                </div>
+            </div>
+
+            <!-- 进度页面 -->
+            <div class="page-content" id="progressPage">
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <div class="progress-title">打卡进度</div>
+                        <div class="progress-stats">2 / 7</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 28.5%;"></div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-title" style="margin-bottom: 1rem;">已完成</div>
+                    <div class="achievements">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🗼</div>
+                            <div class="achievement-name">虎丘塔</div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🏞️</div>
+                            <div class="achievement-name">拙政园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🦁</div>
+                            <div class="achievement-name">狮子林</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🔔</div>
+                            <div class="achievement-name">寒山寺</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🚣</div>
+                            <div class="achievement-name">平江路</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🌸</div>
+                            <div class="achievement-name">留园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🏛️</div>
+                            <div class="achievement-name">博物馆</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部导航 -->
+            <div class="bottom-nav">
+                <button class="nav-item active" onclick="switchPage('statues')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-label">打卡</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('face')">
+                    <div class="nav-icon">📸</div>
+                    <div class="nav-label">拍照</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('dessert')">
+                    <div class="nav-icon">🍰</div>
+                    <div class="nav-label">甜品</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('progress')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">我的</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 打卡模态框 -->
+        <div class="modal" id="statueModal">
+            <div class="modal-content">
+                <div class="modal-icon" id="modalIcon">🗼</div>
+                <div class="modal-title" id="modalTitle">虎丘塔</div>
+                <div class="modal-description" id="modalDescription">
+                    虎丘塔是中国现存时代最久、规模最大的斜塔，有"中国第一斜塔"之称。始建于隋文帝仁寿九年，已有一千多年历史。
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="checkIn()">立即打卡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换
+        function startExploring() {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('mainContent').classList.add('active');
+        }
+
+        function switchPage(page) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // 更新页面内容
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const pageMap = {
+                'statues': { 
+                    id: 'statuesPage', 
+                    title: '石像打卡', 
+                    subtitle: '发现苏州的历史印记' 
+                },
+                'face': { 
+                    id: 'facePage', 
+                    title: '人脸装饰', 
+                    subtitle: '记录美好瞬间' 
+                },
+                'dessert': { 
+                    id: 'dessertPage', 
+                    title: '苏式甜品', 
+                    subtitle: '品味江南美食' 
+                },
+                'progress': { 
+                    id: 'progressPage', 
+                    title: '我的进度', 
+                    subtitle: '查看探索成果' 
+                }
+            };
+
+            const currentPage = pageMap[page];
+            document.getElementById(currentPage.id).classList.add('active');
+            document.getElementById('headerTitle').textContent = currentPage.title;
+            document.getElementById('headerSubtitle').textContent = currentPage.subtitle;
+
+            // 显示/隐藏购物车按钮
+            if (page === 'dessert') {
+                document.getElementById('cartFloat').style.display = 'flex';
+            } else {
+                document.getElementById('cartFloat').style.display = 'none';
+            }
+        }
+
+        // 石像打卡模态框
+        const statueData = {
+            1: { icon: '🗼', name: '虎丘塔', desc: '虎丘塔是中国现存时代最久、规模最大的斜塔，有"中国第一斜塔"之称。始建于隋文帝仁寿九年，已有一千多年历史。' },
+            2: { icon: '🦁', name: '狮子林', desc: '狮子林以假山群闻名于世，素有"假山王国"之美誉。园内假山众多，形似狮子，故名"狮子林"。' },
+            3: { icon: '🏞️', name: '拙政园', desc: '拙政园是江南古典园林的代表作品，被誉为"中国园林之母"。园林占地面积5.2公顷，是苏州现存最大的古典园林。' },
+            4: { icon: '🔔', name: '寒山寺', desc: '寒山寺因唐代诗人张继的《枫桥夜泊》而闻名天下："姑苏城外寒山寺，夜半钟声到客船。"' },
+            5: { icon: '🚣', name: '平江路', desc: '平江路是苏州一条历史悠久的古街，沿河而建，至今已有2500多年历史，是苏州古城保存最完整的一条古街。' },
+            6: { icon: '🌸', name: '留园', desc: '留园以园内建筑布置精巧、奇石众多而知名，与苏州拙政园、北京颐和园、承德避暑山庄并称中国四大名园。' },
+            7: { icon: '🏛️', name: '苏州博物馆', desc: '苏州博物馆是中国地方历史艺术性博物馆，由著名建筑大师贝聿铭设计，将现代建筑与苏州园林完美融合。' }
+        };
+
+        function openStatueModal(id, name) {
+            const statue = statueData[id];
+            document.getElementById('modalIcon').textContent = statue.icon;
+            document.getElementById('modalTitle').textContent = statue.name;
+            document.getElementById('modalDescription').textContent = statue.desc;
+            document.getElementById('statueModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('statueModal').classList.remove('active');
+        }
+
+        function checkIn() {
+            alert('🎉 打卡成功！\n\n您已成功打卡' + document.getElementById('modalTitle').textContent + '！');
+            closeModal();
+        }
+
+        // 人脸拍照
+        function capturePhoto() {
+            alert('📸 照片已保存！\n\n赛博装饰效果已添加！');
+        }
+
+        // 甜品数量控制
+        let quantities = [0, 0, 0, 0, 0, 0, 0];
+
+        function updateQuantity(index, change) {
+            quantities[index] = Math.max(0, quantities[index] + change);
+            document.getElementById('qty-' + index).textContent = quantities[index];
+            
+            // 更新购物车徽章
+            const total = quantities.reduce((a, b) => a + b, 0);
+            const badge = document.getElementById('cartBadge');
+            badge.textContent = total;
+            
+            if (total > 0) {
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function showCart() {
+            const total = quantities.reduce((a, b) => a + b, 0);
+            if (total > 0) {
+                alert('🛒 购物车\n\n共 ' + total + ' 件商品\n\n点击结算进行支付');
+            } else {
+                alert('购物车是空的！');
+            }
+        }
+
+        // 阻止模态框点击事件冒泡
+        document.getElementById('statueModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

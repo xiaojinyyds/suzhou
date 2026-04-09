@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人脸装饰 - 探索姑苏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2E7D32;
+            --primary-light: #4CAF50;
+            --accent-green: #66BB6A;
+            --text-gray: #757575;
+            --border-gray: #E0E0E0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #000;
+            color: white;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .camera-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .camera-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+        }
+
+        .camera-btn:hover {
+            color: var(--accent-green);
+        }
+
+        .camera-btn i {
+            font-size: 1.5rem;
+        }
+
+        .camera-preview {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .face-guide {
+            width: 200px;
+            height: 250px;
+            border: 3px dashed rgba(76, 175, 80, 0.6);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .face-guide-text {
+            position: absolute;
+            bottom: -40px;
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+            width: 200px;
+        }
+
+        .camera-controls {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 5px solid var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .capture-btn:active {
+            transform: scale(0.95);
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid var(--border-gray);
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-gray);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 15px;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-green);
+        }
+
+        .nav-item:hover {
+            color: var(--primary-light);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="camera-header">
+        <button class="camera-btn" onclick="window.location.href='checkin.html'">
+            <i class="fas fa-times"></i>
+        </button>
+        <span>人脸装饰</span>
+        <button class="camera-btn">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <div class="camera-preview">
+        <div class="face-guide">
+            <div class="face-guide-text">请将脸部对准圆圈</div>
+        </div>
+    </div>
+
+    <div class="camera-controls">
+        <button class="camera-btn">
+            <i class="fas fa-images"></i>
+            <span>相册</span>
+        </button>
+        <div class="capture-btn" onclick="capturePhoto()"></div>
+        <button class="camera-btn">
+            <i class="fas fa-sync-alt"></i>
+            <span>切换</span>
+        </button>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="checkin.html" class="nav-item">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>打卡</span>
+        </a>
+        <a href="camera.html" class="nav-item active">
+            <i class="fas fa-camera"></i>
+            <span>拍照</span>
+        </a>
+        <a href="dessert.html" class="nav-item">
+            <i class="fas fa-birthday-cake"></i>
+            <span>甜品</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        function capturePhoto() {
+            // 这里可以添加拍照逻辑
+            alert('拍照功能开发中...');
+        }
+    </script>
+</body>
+</html>
+

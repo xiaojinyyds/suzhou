@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探索姑苏 - 主页</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        /* ========== 全局样式 ========== */
+        body {
+            background: var(--bg-light);
+        }
+
+        .main-app {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .main-app.active {
+            display: block;
+        }
+
+        /* ========== 顶部标题栏 ========== */
+        .app-header {
+            background: var(--gradient-red);
+            color: white;
+            padding: 1.25rem 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></svg>');
+            background-size: 20px 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-greeting {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .user-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            color: white;
+            font-size: 1.125rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== 页面内容区 ========== */
+        .page-content {
+            display: none;
+            padding: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* ========== 石像打卡页面 ========== */
+        .statues-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .statue-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .statue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .statue-card.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: var(--shadow-md);
+        }
+
+        .statue-image {
+            width: 100%;
+            height: 140px;
+            background: var(--gradient-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+        }
+
+        .statue-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .statue-badge.checked {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .statue-info {
+            padding: 1rem;
+        }
+
+        .statue-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .statue-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .statue-distance {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* 打卡统计卡片 */
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-title {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stats-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ========== 人脸装饰页面 ========== */
+        .camera-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-preview {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: var(--gradient-purple);
+            border-radius: var(--radius-md);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .face-guide-circle {
+            width: 200px;
+            height: 200px;
+            border: 4px dashed rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+
+        .camera-hint {
+            position: absolute;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .decoration-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .decoration-item {
+            aspect-ratio: 1;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .decoration-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .decoration-item.active {
+            border-color: var(--primary-color);
+            background: rgba(211, 47, 47, 0.1);
+        }
+
+        .decoration-icon {
+            font-size: 2rem;
+        }
+
+        .decoration-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ========== 甜品点单页面 ========== */
+        .dessert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dessert-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dessert-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dessert-image {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-orange);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dessert-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dessert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .dessert-name {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .dessert-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .dessert-desc {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .dessert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dessert-stock {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .qty-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .qty-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .qty-value {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+            font-size: 1.125rem;
+        }
+
+        /* 购物车浮动按钮 */
+        .cart-float {
+            position: fixed;
+            bottom: 100px;
+            right: calc((100vw - min(480px, 100vw)) / 2 + 20px);
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-red);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            box-shadow: var(--shadow-xl);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .cart-float.show {
+            display: flex;
+        }
+
+        .cart-float:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ========== 我的进度页面 ========== */
+        .profile-header {
+            background: var(--gradient-purple);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-title {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .section-link {
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .progress-stats {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .progress-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .progress-bar-wrapper {
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient-red);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .achievement-item {
+            text-align: center;
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-purple);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 0.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-item.locked .achievement-icon {
+            background: var(--bg-light);
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .achievement-item:hover .achievement-icon {
+            transform: scale(1.1);
+        }
+
+        .achievement-name {
+            font-size: 0.75rem;
+            color: var(--text-dark);
+        }
+
+        /* 菜单项 */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-light);
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+            border-radius: var(--radius-md);
+        }
+
+        .menu-item-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-icon {
+            font-size: 1.5rem;
+        }
+
+        .menu-text {
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .menu-arrow {
+            color: var(--text-light);
+        }
+
+        /* ========== 底部导航栏 ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 0.75rem 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 0 0 3px 3px;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 480px) {
+            .statues-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cart-float {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 主应用 -->
+        <div class="main-app active" id="mainApp">
+            <!-- 顶部标题栏 -->
+            <div class="app-header">
+                <div class="header-top">
+                    <div class="header-user">
+                        <div class="user-avatar">👤</div>
+                        <div>
+                            <div class="user-greeting">你好，</div>
+                            <div class="user-name" id="userName">探索者</div>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-btn" title="通知">🔔</button>
+                        <button class="header-btn" onclick="handleLogout()" title="退出">🚪</button>
+                    </div>
+                </div>
+                <h1 class="header-title" id="headerTitle">石像打卡</h1>
+                <p class="header-subtitle" id="headerSubtitle">发现苏州的历史印记</p>
+            </div>
+
+            <!-- 石像打卡页面 -->
+            <div class="page-content active" id="statuesPage">
+                <!-- 打卡统计 -->
+                <div class="stats-card">
+                    <div class="stats-title">打卡进度</div>
+                    <div class="stats-number"><span id="checkedCount">2</span> / 7</div>
+                    <div class="stats-progress">
+                        <div class="stats-progress-fill" id="statsProgressFill" style="width: 28.5%"></div>
+                    </div>
+                </div>
+
+                <!-- 石像网格 -->
+                <div class="statues-grid" id="statuesGrid">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 人脸装饰页面 -->
+            <div class="page-content" id="facePage">
+                <div class="camera-section">
+                    <div class="camera-preview">
+                        <div class="face-guide-circle"></div>
+                        <div class="camera-hint">请将棉花娃娃的脸放入圆圈内</div>
+                    </div>
+                    <div class="camera-controls">
+                        <button class="btn btn-secondary" style="flex: 0.4;">
+                            🔄 切换
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1;" onclick="capturePhoto()">
+                            📸 拍照
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 装饰效果选择 -->
+                <div class="progress-section">
+                    <div class="section-title">选择装饰效果</div>
+                    <div class="decoration-gallery">
+                        <div class="decoration-item active">
+                            <div class="decoration-icon">✨</div>
+                            <div class="decoration-name">赛博光环</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🌈</div>
+                            <div class="decoration-name">彩虹特效</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">⚡</div>
+                            <div class="decoration-name">电路纹理</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">💫</div>
+                            <div class="decoration-name">星光粒子</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🔮</div>
+                            <div class="decoration-name">魔法光球</div>
+                        </div>
+                        <div class="decoration-item">
+                            <div class="decoration-icon">🎆</div>
+                            <div class="decoration-name">烟花效果</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 甜品点单页面 -->
+            <div class="page-content" id="dessertPage">
+                <div class="dessert-list" id="dessertList">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 购物车浮动按钮 -->
+                <div class="cart-float" id="cartFloat" onclick="showCart()">
+                    🛒
+                    <div class="cart-badge" id="cartBadge">0</div>
+                </div>
+            </div>
+
+            <!-- 我的进度页面 -->
+            <div class="page-content" id="progressPage">
+                <!-- 个人信息 -->
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name" id="profileName">探索者</div>
+                    <div class="profile-title">初级探索者 · 已探索2天</div>
+                </div>
+
+                <!-- 打卡进度 -->
+                <div class="progress-section">
+                    <div class="section-header">
+                        <div class="section-title">打卡进度</div>
+                        <a href="#" class="section-link">查看全部 →</a>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-number">2 / 7</div>
+                        <div class="progress-label">已完成景点</div>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 28.5%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成就系统 -->
+                <div class="progress-section">
+                    <div class="section-header">
+                        <div class="section-title">我的成就</div>
+                        <a href="#" class="section-link">全部成就 →</a>
+                    </div>
+                    <div class="achievements-grid">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🗼</div>
+                            <div class="achievement-name">虎丘塔</div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">🏞️</div>
+                            <div class="achievement-name">拙政园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🦁</div>
+                            <div class="achievement-name">狮子林</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🔔</div>
+                            <div class="achievement-name">寒山寺</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🚣</div>
+                            <div class="achievement-name">平江路</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🌸</div>
+                            <div class="achievement-name">留园</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🏛️</div>
+                            <div class="achievement-name">博物馆</div>
+                        </div>
+                        <div class="achievement-item locked">
+                            <div class="achievement-icon">🏆</div>
+                            <div class="achievement-name">全部完成</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 功能菜单 -->
+                <div class="progress-section">
+                    <div class="menu-list">
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📦</span>
+                                <span class="menu-text">我的订单</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">📸</span>
+                                <span class="menu-text">我的照片</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">⚙️</span>
+                                <span class="menu-text">设置</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-item-content">
+                                <span class="menu-icon">ℹ️</span>
+                                <span class="menu-text">关于我们</span>
+                            </div>
+                            <span class="menu-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                <button class="nav-item active" onclick="switchPage('statues')">
+                    <div class="nav-icon">🗿</div>
+                    <div class="nav-label">打卡</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('face')">
+                    <div class="nav-icon">📸</div>
+                    <div class="nav-label">拍照</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('dessert')">
+                    <div class="nav-icon">🍰</div>
+                    <div class="nav-label">甜品</div>
+                </button>
+                <button class="nav-item" onclick="switchPage('progress')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">我的</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 石像详情模态框 -->
+        <div class="modal" id="statueModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);">
+            <div class="modal-content">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.5rem; font-weight: bold; color: var(--text-dark);" id="modalTitle">虎丘塔</h3>
+                    <button onclick="closeModal()" style="width: 32px; height: 32px; border: none; background: var(--bg-light); border-radius: 50%; cursor: pointer; font-size: 1.25rem;">×</button>
+                </div>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <div style="font-size: 5rem;" id="modalIcon">🗼</div>
+                </div>
+                <div style="color: var(--text-light); line-height: 1.6; margin-bottom: 2rem;" id="modalDescription">
+                    虎丘塔是中国现存时代最久、规模最大的斜塔...
+                </div>
+                <div style="padding: 1rem; background: var(--bg-light); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-light);">距离</span>
+                        <span style="font-weight: bold;" id="modalDistance">0.5km</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-light);">状态</span>
+                        <span style="font-weight: bold; color: var(--success-color);" id="modalStatus">已打卡</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="checkIn()">立即打卡</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// ========== 数据定义 ==========
+const statuesData = [
+    {id: 1, name: "虎丘塔", icon: "🗼", distance: 0.5, isChecked: true, introduction: "虎丘塔是中国现存时代最久、规模最大的斜塔，有'中国第一斜塔'之称。始建于隋文帝仁寿九年（公元601年），已有一千多年历史。"},
+    {id: 2, name: "狮子林", icon: "🦁", distance: 1.2, isChecked: false, introduction: "狮子林以假山群闻名于世，素有'假山王国'之美誉。园内假山众多，形似狮子。"},
+    {id: 3, name: "拙政园", icon: "🏞️", distance: 0.8, isChecked: true, introduction: "拙政园是江南古典园林的代表作品，被誉为'中国园林之母'。"},
+    {id: 4, name: "寒山寺", icon: "🔔", distance: 3.5, isChecked: false, introduction: "寒山寺因唐代诗人张继的《枫桥夜泊》而闻名天下。"},
+    {id: 5, name: "平江路", icon: "🚣", distance: 2.1, isChecked: false, introduction: "平江路是苏州一条历史悠久的古街，至今已有2500多年历史。"},
+    {id: 6, name: "留园", icon: "🌸", distance: 4.2, isChecked: false, introduction: "留园以园内建筑布置精巧、奇石众多而知名，中国四大名园之一。"},
+    {id: 7, name: "苏州博物馆", icon: "🏛️", distance: 1.5, isChecked: false, introduction: "由世界著名建筑大师贝聿铭设计，将现代建筑与苏州园林完美融合。"}
+];
+
+const dessertsData = [
+    {id: 1, name: "苏式月饼", icon: "🥮", price: 18, description: "传统苏式月饼，酥皮松软，馅料香甜", stock: 50},
+    {id: 2, name: "桂花糖藕", icon: "🍡", price: 15, description: "香甜软糯，桂花飘香，江南特色甜品", stock: 30},
+    {id: 3, name: "松子糕", icon: "🍰", price: 12, description: "松软香甜，松子香气浓郁", stock: 40},
+    {id: 4, name: "青团", icon: "🥟", price: 10, description: "清明时节必备，软糯可口", stock: 60},
+    {id: 5, name: "定胜糕", icon: "🍮", price: 8, description: "软糯香甜，寓意美好", stock: 45},
+    {id: 6, name: "海棠糕", icon: "🍪", price: 6, description: "外脆内软，豆沙香甜", stock: 55},
+    {id: 7, name: "梅花糕", icon: "🧁", price: 9, description: "造型精美，香甜可口", stock: 35}
+];
+
+// ========== 全局状态 ==========
+let currentPage = 'statues';
+let checkInData = [];
+let cartData = [];
+let currentStatue = null;
+
+// ========== 初始化 ==========
+window.addEventListener('DOMContentLoaded', function() {
+    loadUserData();
+    renderStatues();
+    renderDesserts();
+    loadCartData();
+});
+
+// 加载用户数据
+function loadUserData() {
+    const userName = localStorage.getItem('userName') || '探索者';
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('profileName').textContent = userName;
+    
+    const savedCheckIns = localStorage.getItem('checkIns');
+    if (savedCheckIns) {
+        checkInData = JSON.parse(savedCheckIns);
+        statuesData.forEach(statue => {
+            const checked = checkInData.some(item => item.statueId === statue.id);
+            statue.isChecked = checked;
+        });
+    }
+    updateProgress();
+}
+
+// 更新进度统计
+function updateProgress() {
+    const checkedCount = statuesData.filter(s => s.isChecked).length;
+    const percentage = (checkedCount / 7 * 100).toFixed(1);
+    document.getElementById('checkedCount').textContent = checkedCount;
+    document.getElementById('statsProgressFill').style.width = percentage + '%';
+}
+
+// ========== 渲染石像列表 ==========
+function renderStatues() {
+    const grid = document.getElementById('statuesGrid');
+    grid.innerHTML = statuesData.map(statue => `
+        <div class="statue-card ${statue.isChecked ? 'checked' : ''}" onclick="openStatueDetail(${statue.id})">
+            <div class="statue-image">
+                <div class="statue-badge ${statue.isChecked ? 'checked' : ''}">
+                    ${statue.isChecked ? '已打卡' : '未打卡'}
+                </div>
+                <div style="font-size: 3.5rem;">${statue.icon}</div>
+            </div>
+            <div class="statue-info">
+                <div class="statue-name">${statue.name}</div>
+                <div class="statue-meta">
+                    <div class="statue-distance">📍 ${statue.distance}km</div>
+                    <div style="color: var(--primary-color); font-weight: 600;">${statue.isChecked ? '✓' : '→'}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 打开石像详情
+function openStatueDetail(id) {
+    currentStatue = statuesData.find(s => s.id === id);
+    document.getElementById('modalIcon').textContent = currentStatue.icon;
+    document.getElementById('modalTitle').textContent = currentStatue.name;
+    document.getElementById('modalDescription').textContent = currentStatue.introduction;
+    document.getElementById('modalDistance').textContent = currentStatue.distance + 'km';
+    document.getElementById('modalStatus').textContent = currentStatue.isChecked ? '已打卡' : '未打卡';
+    document.getElementById('modalStatus').style.color = currentStatue.isChecked ? 'var(--success-color)' : 'var(--text-light)';
+    document.getElementById('statueModal').style.display = 'flex';
+}
+
+// 关闭模态框
+function closeModal() {
+    document.getElementById('statueModal').style.display = 'none';
+}
+
+// 打卡功能
+function checkIn() {
+    if (!currentStatue || currentStatue.isChecked) {
+        alert('你已经打卡过这个景点了！');
+        return;
+    }
+    
+    alert('正在定位...');
+    setTimeout(() => {
+        currentStatue.isChecked = true;
+        checkInData.push({
+            statueId: currentStatue.id,
+            statueName: currentStatue.name,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('checkIns', JSON.stringify(checkInData));
+        renderStatues();
+        updateProgress();
+        closeModal();
+        alert(`🎉 打卡成功！\n恭喜你完成 ${currentStatue.name} 的打卡`);
+    }, 1000);
+}
+
+// ========== 渲染甜品列表 ==========
+function renderDesserts() {
+    const list = document.getElementById('dessertList');
+    list.innerHTML = dessertsData.map(dessert => `
+        <div class="dessert-card">
+            <div class="dessert-image">${dessert.icon}</div>
+            <div class="dessert-info">
+                <div class="dessert-header">
+                    <div class="dessert-name">${dessert.name}</div>
+                    <div class="dessert-price">¥${dessert.price}</div>
+                </div>
+                <div class="dessert-desc">${dessert.description}</div>
+                <div class="dessert-footer">
+                    <div class="dessert-stock">库存 ${dessert.stock}</div>
+                    <div class="quantity-control">
+                        <button class="qty-btn" onclick="updateQuantity(${dessert.id}, -1)">−</button>
+                        <div class="qty-value" id="qty-${dessert.id}">0</div>
+                        <button class="qty-btn" onclick="updateQuantity(${dessert.id}, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 更新甜品数量
+function updateQuantity(dessertId, change) {
+    const dessert = dessertsData.find(d => d.id === dessertId);
+    const qtyElement = document.getElementById(`qty-${dessertId}`);
+    let currentQty = parseInt(qtyElement.textContent);
+    let newQty = Math.max(0, Math.min(dessert.stock, currentQty + change));
+    qtyElement.textContent = newQty;
+    
+    // 更新购物车
+    const index = cartData.findIndex(item => item.dessertId === dessertId);
+    if (newQty > 0) {
+        if (index >= 0) cartData[index].quantity = newQty;
+        else cartData.push({ dessertId, quantity: newQty });
+    } else {
+        if (index >= 0) cartData.splice(index, 1);
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cartData));
+    updateCartBadge();
+}
+
+// 加载购物车数据
+function loadCartData() {
+    const saved = localStorage.getItem('cart');
+    if (saved) {
+        cartData = JSON.parse(saved);
+        cartData.forEach(item => {
+            const el = document.getElementById(`qty-${item.dessertId}`);
+            if (el) el.textContent = item.quantity;
+        });
+        updateCartBadge();
+    }
+}
+
+// 更新购物车徽章
+function updateCartBadge() {
+    const total = cartData.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cartBadge').textContent = total;
+    if (total > 0 && currentPage === 'dessert') {
+        document.getElementById('cartFloat').classList.add('show');
+    } else {
+        document.getElementById('cartFloat').classList.remove('show');
+    }
+}
+
+// 显示购物车
+function showCart() {
+    if (cartData.length === 0) {
+        alert('购物车是空的！');
+        return;
+    }
+    const items = cartData.map(item => {
+        const dessert = dessertsData.find(d => d.id === item.dessertId);
+        return `${dessert.name} x${item.quantity} = ¥${dessert.price * item.quantity}`;
+    }).join('\n');
+    const total = cartData.reduce((sum, item) => {
+        const dessert = dessertsData.find(d => d.id === item.dessertId);
+        return sum + (dessert.price * item.quantity);
+    }, 0);
+    
+    if (confirm(`🛒 购物车\n\n${items}\n\n总计：¥${total}\n\n点击确定进行结算`)) {
+        alert('🎉 订单提交成功！');
+        cartData = [];
+        localStorage.removeItem('cart');
+        dessertsData.forEach(d => {
+            const el = document.getElementById(`qty-${d.id}`);
+            if (el) el.textContent = '0';
+        });
+        updateCartBadge();
+    }
+}
+
+// ========== 页面切换 ==========
+function switchPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.page-content').forEach(content => content.classList.remove('active'));
+    
+    const config = {
+        'statues': { id: 'statuesPage', title: '石像打卡', subtitle: '发现苏州的历史印记' },
+        'face': { id: 'facePage', title: '人脸装饰', subtitle: '记录美好瞬间' },
+        'dessert': { id: 'dessertPage', title: '苏式甜品', subtitle: '品味江南美食' },
+        'progress': { id: 'progressPage', title: '我的进度', subtitle: '查看探索成果' }
+    };
+    
+    const c = config[page];
+    document.getElementById(c.id).classList.add('active');
+    document.getElementById('headerTitle').textContent = c.title;
+    document.getElementById('headerSubtitle').textContent = c.subtitle;
+    
+    updateCartBadge();
+}
+
+// 人脸拍照
+function capturePhoto() {
+    alert('📸 照片已保存！\n赛博装饰效果已添加！');
+}
+
+// 退出登录
+function handleLogout() {
+    if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userName');
+        location.href = 'welcome.html';
+    }
+}
+    </script>
+</body>
+</html>
+

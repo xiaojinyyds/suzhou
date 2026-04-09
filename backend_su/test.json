@@ -1,0 +1,34 @@
+{
+  "email": "2833252491@qq.com",
+  "code": "string",
+  "password": "HUanlei0329",
+  "nickname": "xiaojin"
+}
+#注册
+{
+  "email": "2833252491@qq.com"
+}
+#登录
+{
+  "account": "xiaojin",
+  "password": "HUanlei0329"
+}
+
+#修改用户信息
+{
+  "nickname": "dajin",
+  "avatar_url": "https://codefather.cn/logo.png"
+}
+#修改当前密码的请求体
+{
+  "old_password": "HUanlei0329",
+  "new_password": "NewStrongPass!2025"
+}
+
+#验证码忘记密码
+{
+  "email": "2833252491@qq.com",
+  "code": "string",
+  "new_password": "HUanlei0329"
+}
+// .\venv\Scripts\activate

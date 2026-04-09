@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 探索姑苏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --accent-green: #66BB6A;
+            --light-green: #E8F5E9;
+            --bg-gray: #F5F5F5;
+            --text-dark: #212121;
+            --text-gray: #757575;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .login-logo i {
+            font-size: 3rem;
+            color: var(--primary-green);
+        }
+
+        .login-title {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .login-form {
+            width: 100%;
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+
+        .input-group {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .input-group i {
+            color: var(--primary-green);
+            font-size: 1.2rem;
+        }
+
+        .input-group input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: var(--primary-green);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .login-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .login-links a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .login-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-logo">
+            <i class="fas fa-landmark"></i>
+        </div>
+        <h1 class="login-title">探索姑苏</h1>
+        <p class="login-subtitle">发现苏州的历史印记</p>
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <i class="fas fa-mobile-alt"></i>
+                <input type="tel" placeholder="请输入手机号" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="请输入密码" required>
+            </div>
+            <button class="login-btn" type="submit">登录</button>
+            <div class="login-links">
+                <a href="register.html"><i class="fas fa-user-plus"></i> 注册账号</a>
+                <a href="#"><i class="fas fa-key"></i> 忘记密码</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            // 这里可以添加登录逻辑
+            // 登录成功后跳转到打卡页面
+            window.location.href = 'checkin.html';
+        }
+    </script>
+</body>
+</html>
+
